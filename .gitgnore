@@ -1,0 +1,9 @@
+# Ignorando banco de dados
+*.db
+*.csv
+
+# Pastas de banco
+data/
+
+# Arquivos sensíveis
+.env
