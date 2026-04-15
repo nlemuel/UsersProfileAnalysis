@@ -26,7 +26,8 @@ tb_sumario_transacoes AS (
         count(CASE WHEN diffDate <= 14 THEN IdTransacao END) AS Transacoes14,
         count(CASE WHEN diffDate <= 7 THEN IdTransacao END) AS Transacoes7,
         
-        cast(min(diffDate) AS INTEGER) AS diasUltimaInteracao
+        cast(min(diffDate) AS INTEGER) AS diasUltimaInteracao,
+        sum(qtdePontos) AS SaldoPontos
 
     FROM tb_transacoes
     GROUP BY IdCliente
