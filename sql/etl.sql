@@ -27,7 +27,14 @@ tb_sumario_transacoes AS (
         count(CASE WHEN diffDate <= 7 THEN IdTransacao END) AS Transacoes7,
         
         cast(min(diffDate) AS INTEGER) AS diasUltimaInteracao,
-        sum(qtdePontos) AS SaldoPontos
+        sum(qtdePontos) AS SaldoPontos,
+
+        sum(CASE WHEN qtdePontos > 0 THEN qtdePontos ELSE 0 END) AS qtdePontosPosVida,
+
+        sum(CASE WHEN qtdePontos > 0 AND diffDate <= 56 THEN qtdePontos ELSE 0 END) AS qtdePontosPos56,
+        sum(CASE WHEN qtdePontos > 0 AND diffDate <= 28 THEN qtdePontos ELSE 0 END) AS qtdePontosPos28,
+        sum(CASE WHEN qtdePontos > 0 AND diffDate <= 14 THEN qtdePontos ELSE 0 END) AS qtdePontosPos14,
+        sum(CASE WHEN qtdePontos > 0 AND diffDate <= 7 THEN qtdePontos ELSE 0 END) AS qtdePontosPos7
 
     FROM tb_transacoes
     GROUP BY IdCliente
