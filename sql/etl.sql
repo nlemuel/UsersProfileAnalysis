@@ -14,7 +14,8 @@ SELECT
     count(CASE WHEN diffDate <= 56 THEN IdTransacao END) AS Transacoes56,
     count(CASE WHEN diffDate <= 28 THEN IdTransacao END) AS Transacoes28,
     count(CASE WHEN diffDate <= 14 THEN IdTransacao END) AS Transacoes14,
-    count(CASE WHEN diffDate <= 7 THEN IdTransacao END) AS Transacoes7
+    count(CASE WHEN diffDate <= 7 THEN IdTransacao END) AS Transacoes7,
+    cast(min(diffDate) AS INTEGER) AS diasUltimaTransacao
 
 FROM tb_transacoes
 GROUP BY IdCliente
