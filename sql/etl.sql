@@ -4,7 +4,8 @@ WITH tb_transacoes AS (
         IdCliente,
         QtdePontos,
         datetime(substr(dtCriacao, 1, 19)) AS dtCriacao,
-        julianday('now') - julianday(substr(dtCriacao, 1, 19)) AS diffDate
+        julianday('now') - julianday(substr(dtCriacao, 1, 19)) AS diffDate,
+        CAST(strftime('%H', substr(DtCriacao, 1, 19)) AS INTEGER) AS dtHora
     FROM transacoes
 ),
 
@@ -84,6 +85,54 @@ tb_cliente_produto_rn AS (
     FROM tb_cliente_produto
 ),
 
+tb_cliente_dia AS (
+
+    SELECT idCliente,
+        strftime('%w', dtCriacao) AS dtDia,
+        count(*) AS qtdTransacao
+
+    FROM tb_transacoes
+    WHERE diffDate <= 28
+    GROUP BY idCliente, dtDia
+
+),
+
+tb_cliente_dia_rn AS (
+
+    SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY idCliente ORDER BY qtdTransacao DESC) as rnDia
+
+    FROM tb_cliente_dia
+
+),
+
+tb_cliente_periodo AS (
+
+    SELECT
+        IdTransacao,
+        idCliente,
+        DtCriacao,
+        CASE WHEN  dtHora BETWEEN 7 AND 12 THEN 'MANHÃ'
+            WHEN dtHora BETWEEN 13 AND 18 THEN 'TARDE'
+            WHEN dtHora BETWEEN 19 and 23 THEN 'NOITE'
+            ELse 'SEM INFORMAÇÂO'
+        END AS Periodo,
+        COUNT(*) AS qtdeTransacao
+
+    FROM tb_transacoes
+    WHERE diffDate <= 28
+    
+    GROUP BY 1, 2
+),
+
+tb_cliente_periodo_rn AS (
+
+SELECT 
+    *,
+    ROW_NUMBER() OVER (PARTITION BY idCliente ORDER BY qtdeTransacao DESC) AS rnPeriodo
+FROM tb_cliente_periodo 
+),
+
 tb_join AS (
     SELECT 
         t1.*,
@@ -92,7 +141,9 @@ tb_join AS (
         t4.DescNomeProduto AS produto56,
         t5.DescNomeProduto AS produto28,
         t6.DescNomeProduto AS produto14,
-        t7.DescNomeProduto AS produto7
+        t7.DescNomeProduto AS produto7,
+        COALESCE(t8.dtDia, - 1) AS dtDia,
+        COALESCE(t9.periodo, 'SEM INFORMACAO') AS periodo+Info
         
     FROM tb_sumario_transacoes AS t1
     LEFT JOIN tb_cliente AS t2
@@ -117,7 +168,14 @@ tb_join AS (
     LEFT JOIN tb_cliente_produto_rn AS t7
     ON t1.IdCliente = t7.idCliente
     AND t7.rn7 = 1
+
+    LEFT JOIN tb_cliente_dia_rn AS t8
+    ON t1.idCliente = t8.idCliente
+    AND t8.rnDia = 1
+
+    LEFT JOIN tb_cliente_periodo_rn AS t9
+    ON t1.idCliente = t9.idCliente
+    AND t9.rnPeriodo = 1
 )
 
 SELECT * FROM tb_join
-ORDER BY idCliente
