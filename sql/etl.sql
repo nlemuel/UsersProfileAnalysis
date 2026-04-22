@@ -143,7 +143,7 @@ tb_join AS (
         t6.DescNomeProduto AS produto14,
         t7.DescNomeProduto AS produto7,
         COALESCE(t8.dtDia, - 1) AS dtDia,
-        COALESCE(t9.periodo, 'SEM INFORMACAO') AS periodo+Info
+        COALESCE(t9.periodo, 'SEM INFORMACAO') AS periodoMaisTransacao28
         
     FROM tb_sumario_transacoes AS t1
     LEFT JOIN tb_cliente AS t2
@@ -178,4 +178,8 @@ tb_join AS (
     AND t9.rnPeriodo = 1
 )
 
-SELECT * FROM tb_join
+SELECT 
+    *,
+    1. * Transacoes28 / TransacoesVida AS engajamento28Vida
+
+FROM tb_join
