@@ -179,6 +179,7 @@ tb_join AS (
 )
 
 SELECT 
+    '{date}' AS dtRef,
     *,
     1. * Transacoes28 / TransacoesVida AS engajamento28Vida
 
