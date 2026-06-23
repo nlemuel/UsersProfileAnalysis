@@ -1,0 +1,651 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .nav { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 24px; padding: 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-lg); }
+  .nav button { font-size: 12px; padding: 6px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+  .nav button:hover { background: var(--color-background-primary); color: var(--color-text-primary); }
+  .nav button.active { background: var(--color-background-primary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  h2 { font-size: 18px; font-weight: 500; margin-bottom: 16px; color: var(--color-text-primary); }
+  h3 { font-size: 15px; font-weight: 500; margin: 20px 0 10px; color: var(--color-text-primary); }
+  p { font-size: 14px; line-height: 1.7; color: var(--color-text-secondary); margin-bottom: 10px; }
+
+  .phase-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; margin-bottom: 12px; background: var(--color-background-primary); }
+  .phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .phase-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+  .fase1 { background: var(--color-background-success); color: var(--color-text-success); }
+  .fase2 { background: var(--color-background-info); color: var(--color-text-info); }
+  .fase3 { background: #FAEEDA; color: #633806; }
+  .fase4 { background: #FAECE7; color: #4A1B0C; }
+  .fase5 { background: #F1EFE8; color: #2C2C2A; }
+  .fase6 { background: #EEEDFE; color: #26215C; }
+  .fase7 { background: #FBEAF0; color: #4B1528; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); cursor: pointer; transition: all 0.15s; }
+  .tag:hover { background: var(--color-background-primary); border-color: var(--color-border-primary); color: var(--color-text-primary); }
+
+  .pattern-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .pattern-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px; background: var(--color-background-primary); cursor: pointer; transition: border-color 0.15s; }
+  .pattern-card:hover { border-color: var(--color-border-primary); }
+  .pattern-card h4 { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .pattern-card p { font-size: 12px; line-height: 1.5; margin-bottom: 8px; }
+  .keywords { display: flex; flex-wrap: wrap; gap: 4px; }
+  .kw { font-size: 10px; font-family: var(--font-mono); padding: 2px 6px; border-radius: 4px; background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .trap { font-size: 11px; color: var(--color-text-danger); margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--color-border-danger); }
+
+  .diff-badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+  .easy { background: var(--color-background-success); color: var(--color-text-success); }
+  .medium { background: #FAEEDA; color: #633806; }
+  .hard { background: var(--color-background-danger); color: var(--color-text-danger); }
+
+  .exercise-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; margin-bottom: 12px; background: var(--color-background-primary); }
+  .exercise-card .ex-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .ex-title { font-size: 14px; font-weight: 500; flex: 1; }
+  .ex-context { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .ex-problem { font-size: 13px; line-height: 1.6; color: var(--color-text-primary); background: var(--color-background-secondary); padding: 10px 12px; border-radius: var(--border-radius-md); margin-bottom: 10px; }
+  .tables-used { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .tables-used span { font-family: var(--font-mono); background: var(--color-background-secondary); padding: 1px 5px; border-radius: 3px; margin-left: 4px; }
+
+  details { margin-top: 8px; }
+  details summary { font-size: 12px; cursor: pointer; color: var(--color-text-secondary); user-select: none; padding: 4px 0; }
+  details summary:hover { color: var(--color-text-primary); }
+  details[open] summary { color: var(--color-text-primary); margin-bottom: 8px; }
+
+  pre { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; font-size: 12px; font-family: var(--font-mono); white-space: pre-wrap; overflow-x: auto; line-height: 1.6; color: var(--color-text-primary); }
+  .comment { color: var(--color-text-secondary); }
+  .kw-sql { color: #185FA5; font-weight: 500; }
+
+  .hint-list { list-style: none; }
+  .hint-list li { font-size: 12px; line-height: 1.6; padding: 6px 10px; border-left: 2px solid var(--color-border-tertiary); margin-bottom: 6px; color: var(--color-text-secondary); }
+
+  .day-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; margin-bottom: 8px; background: var(--color-background-primary); display: flex; gap: 14px; align-items: flex-start; }
+  .day-num { font-size: 11px; font-weight: 500; min-width: 40px; color: var(--color-text-secondary); padding-top: 2px; }
+  .day-content { flex: 1; }
+  .day-content strong { font-size: 13px; font-weight: 500; display: block; margin-bottom: 4px; }
+  .day-content p { font-size: 12px; margin: 0; }
+
+  .schema-block { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; font-size: 12px; font-family: var(--font-mono); line-height: 1.8; margin-bottom: 12px; }
+  .schema-block .tbl { color: var(--color-text-primary); font-weight: 500; }
+  .schema-block .col { color: var(--color-text-secondary); padding-left: 16px; display: block; }
+  .schema-block .pk { color: #185FA5; }
+
+  .signal { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); margin-bottom: 6px; }
+  .signal-icon { font-size: 16px; min-width: 20px; }
+  .signal-text { font-size: 12px; line-height: 1.5; color: var(--color-text-secondary); }
+</style>
+
+<div style="padding: 16px 0">
+  <h2 style="font-size: 22px; margin-bottom: 6px;">SQL LeetCode Roadmap</h2>
+  <p style="margin-bottom: 20px;">Reconhecimento de padrões em SQL — do básico ao Analytics Engineering, com sua base de dados real.</p>
+
+  <div class="nav">
+    <button class="active" onclick="showSection('padroes')">Padrões SQL</button>
+    <button onclick="showSection('roadmap')">Roadmap</button>
+    <button onclick="showSection('schema')">Sua Base</button>
+    <button onclick="showSection('exercicios')">Exercícios</button>
+    <button onclick="showSection('plano')">Plano de Estudo</button>
+  </div>
+
+  <!-- SEÇÃO 1: PADRÕES -->
+  <div id="padroes" class="section active">
+    <h2>Os "Tipos de Problemas" do SQL</h2>
+    <p>Assim como DFS/BFS em algoritmos, SQL tem padrões recorrentes. Aprenda a identificá-los pelo enunciado.</p>
+
+    <div class="pattern-grid">
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine GROUP BY + HAVING com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge easy">Fase 1</span>
+          <h4>Agregação + Filtro de Grupo</h4>
+        </div>
+        <p>Contar, somar, médias agrupadas. O padrão mais comum em análise de negócios.</p>
+        <div class="keywords"><span class="kw">GROUP BY</span><span class="kw">HAVING</span><span class="kw">COUNT</span><span class="kw">SUM</span><span class="kw">AVG</span></div>
+        <div class="trap">⚠ Armadilha: WHERE filtra linhas, HAVING filtra grupos — não são substituíveis.</div>
+      </div>
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine JOINs com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge easy">Fase 2</span>
+          <h4>JOINs</h4>
+        </div>
+        <p>Combinar tabelas. INNER retorna interseção. LEFT retorna todos da esquerda + match da direita (NULL se não houver).</p>
+        <div class="keywords"><span class="kw">INNER JOIN</span><span class="kw">LEFT JOIN</span><span class="kw">SELF JOIN</span><span class="kw">CROSS JOIN</span></div>
+        <div class="trap">⚠ Armadilha: LEFT JOIN com WHERE na tabela direita vira INNER JOIN implicitamente.</div>
+      </div>
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine Subqueries e CTEs com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge medium">Fase 3</span>
+          <h4>Subqueries / CTE</h4>
+        </div>
+        <p>Queries dentro de queries. CTE deixa legível. Correlated subquery referencia a query externa — cuidado com performance.</p>
+        <div class="keywords"><span class="kw">WITH</span><span class="kw">AS</span><span class="kw">EXISTS</span><span class="kw">IN</span><span class="kw">NOT IN</span></div>
+        <div class="trap">⚠ Armadilha: NOT IN com NULL retorna vazio — use NOT EXISTS ou IS NOT NULL.</div>
+      </div>
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine Window Functions com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge medium">Fase 4</span>
+          <h4>Window Functions</h4>
+        </div>
+        <p>Cálculos por janela sem colapsar linhas. ROW_NUMBER, RANK, LAG, LEAD, Running Total. O padrão mais poderoso do SQL analítico.</p>
+        <div class="keywords"><span class="kw">OVER</span><span class="kw">PARTITION BY</span><span class="kw">ORDER BY</span><span class="kw">ROW_NUMBER</span><span class="kw">LAG</span></div>
+        <div class="trap">⚠ Armadilha: RANK pula números, DENSE_RANK não — escolha conforme o requisito.</div>
+      </div>
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine Top N por Grupo com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge medium">Fase 4</span>
+          <h4>Top N por Grupo</h4>
+        </div>
+        <p>"Os 3 produtos mais vendidos por categoria." Sinal claro: ranking + partição. Sempre ROW_NUMBER() OVER (PARTITION BY grupo ORDER BY métrica).</p>
+        <div class="keywords"><span class="kw">ROW_NUMBER</span><span class="kw">PARTITION BY</span><span class="kw">WHERE rn &lt;= N</span></div>
+        <div class="trap">⚠ Armadilha: não dá para usar Window Function direto no WHERE — precisa de CTE ou subquery.</div>
+      </div>
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine Deduplicação e Gaps and Islands com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge hard">Fase 5</span>
+          <h4>Gaps and Islands</h4>
+        </div>
+        <p>Detectar sequências consecutivas ou lacunas. Clássico em análise de eventos, sessões, streaks de usuários.</p>
+        <div class="keywords"><span class="kw">ROW_NUMBER</span><span class="kw">LAG</span><span class="kw">GROUP BY island</span></div>
+        <div class="trap">⚠ Sinal: "dias consecutivos", "sequência ininterrupta", "lacunas entre eventos".</div>
+      </div>
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine Retenção de Usuários e Cohort Analysis com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge hard">Fase 6</span>
+          <h4>Retenção / Cohort</h4>
+        </div>
+        <p>Agrupar usuários pela data de entrada (cohort) e medir retenção nos meses seguintes. Base de analytics engineering.</p>
+        <div class="keywords"><span class="kw">DATE_TRUNC</span><span class="kw">MIN(data)</span><span class="kw">DATEDIFF</span><span class="kw">CASE WHEN</span></div>
+        <div class="trap">⚠ Sinal: "% de usuários que voltaram", "mês 0, mês 1, mês 2..."</div>
+      </div>
+
+      <div class="pattern-card" onclick="sendPrompt('Me ensine SCD e Feature Store com exercícios na minha base de dados')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="diff-badge hard">Fase 7</span>
+          <h4>Analytics Engineering / SCD</h4>
+        </div>
+        <p>Slowly Changing Dimensions, Feature Store, snapshots temporais. Sua tabela feature_store_cliente já segue esse padrão.</p>
+        <div class="keywords"><span class="kw">dtRef</span><span class="kw">valid_from</span><span class="kw">valid_to</span><span class="kw">snapshot</span></div>
+        <div class="trap">⚠ Sinal: "estado do cliente em uma data específica", "evolução temporal de features".</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2: ROADMAP -->
+  <div id="roadmap" class="section">
+    <h2>Roadmap — Do Básico ao Avançado</h2>
+    <p>Siga a ordem. Cada fase desbloqueia a próxima. Clique nas tags para iniciar uma sessão de estudo.</p>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase1">Fase 1 — Fundamentos</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 1</span>
+      </div>
+      <p>O alfabeto do SQL. Não pule — mesmo experientes têm gaps aqui.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Ensine SELECT + WHERE com exercícios progressivos na minha base de dados SQLite')">SELECT + WHERE</span>
+        <span class="tag" onclick="sendPrompt('Ensine ORDER BY + LIMIT com exercícios na minha base')">ORDER BY + LIMIT</span>
+        <span class="tag" onclick="sendPrompt('Ensine CASE WHEN com exercícios progressivos na minha base de dados')">CASE WHEN</span>
+        <span class="tag" onclick="sendPrompt('Ensine funções de texto e data no SQLite com exercícios')">Funções de Data</span>
+        <span class="tag" onclick="sendPrompt('Ensine DISTINCT e deduplicação básica com exercícios na minha base')">DISTINCT</span>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase2">Fase 2 — Agregações</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 2</span>
+      </div>
+      <p>O coração do analytics. 70% dos problemas reais envolvem aggregation.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Ensine GROUP BY com 10 exercícios progressivos na minha base de dados')">GROUP BY</span>
+        <span class="tag" onclick="sendPrompt('Ensine HAVING vs WHERE com exemplos na minha base')">HAVING vs WHERE</span>
+        <span class="tag" onclick="sendPrompt('Ensine COUNT, SUM, AVG, MIN, MAX com exercícios na minha base')">Funções Agregadoras</span>
+        <span class="tag" onclick="sendPrompt('Ensine GROUP BY com ROLLUP e subtotais na minha base')">Subtotais</span>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase3">Fase 3 — JOINs</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 2–3</span>
+      </div>
+      <p>Combinar múltiplas tabelas. Saber quando usar LEFT vs INNER é crucial.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Ensine INNER JOIN com exercícios usando transacoes + clientes + produtos')">INNER JOIN</span>
+        <span class="tag" onclick="sendPrompt('Ensine LEFT JOIN e como identificar registros sem match com exercícios')">LEFT JOIN</span>
+        <span class="tag" onclick="sendPrompt('Ensine SELF JOIN com exemplos práticos na minha base')">SELF JOIN</span>
+        <span class="tag" onclick="sendPrompt('Ensine JOIN de múltiplas tabelas com exercícios usando as 3 tabelas da minha base')">Multi-table JOIN</span>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase3">Fase 4 — Subqueries e CTEs</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 3</span>
+      </div>
+      <p>Queries compostas. CTEs tornam código legível e reutilizável.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Ensine Subqueries no SELECT, FROM e WHERE com exercícios progressivos')">Subqueries</span>
+        <span class="tag" onclick="sendPrompt('Ensine CTE (WITH) com exercícios práticos na minha base de dados')">CTE</span>
+        <span class="tag" onclick="sendPrompt('Ensine Correlated Subquery com exemplos e exercícios')">Correlated Subquery</span>
+        <span class="tag" onclick="sendPrompt('Ensine CTE Recursiva com exemplos práticos')">CTE Recursiva</span>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase4">Fase 5 — Window Functions</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 4</span>
+      </div>
+      <p>O divisor de águas entre SQL básico e avançado. Dominar isso muda tudo.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Ensine ROW_NUMBER, RANK e DENSE_RANK com exercícios na minha base')">ROW_NUMBER / RANK</span>
+        <span class="tag" onclick="sendPrompt('Ensine LAG e LEAD com exercícios de variação temporal na minha base')">LAG / LEAD</span>
+        <span class="tag" onclick="sendPrompt('Ensine Running Total e Moving Average com exercícios na minha base')">Running Total</span>
+        <span class="tag" onclick="sendPrompt('Ensine NTILE e Percentis com Window Functions na minha base')">NTILE / Percentis</span>
+        <span class="tag" onclick="sendPrompt('Ensine Top N por Grupo com Window Functions e exercícios na minha base')">Top N por Grupo</span>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase5">Fase 6 — Padrões Avançados</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 5–6</span>
+      </div>
+      <p>Problemas clássicos que aparecem em entrevistas e no dia a dia de dados.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Ensine Gaps and Islands com exercícios na minha base de dados')">Gaps and Islands</span>
+        <span class="tag" onclick="sendPrompt('Ensine Deduplicação avançada com Window Functions')">Deduplicação</span>
+        <span class="tag" onclick="sendPrompt('Ensine Pivot e Unpivot em SQLite com exercícios')">Pivot / Unpivot</span>
+        <span class="tag" onclick="sendPrompt('Ensine Percentuais e Participação de mercado com exercícios na minha base')">% e Participação</span>
+        <span class="tag" onclick="sendPrompt('Ensine Funnel Analysis com exercícios na minha base de dados')">Funnel Analysis</span>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase6">Fase 7 — Analytics</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 7–8</span>
+      </div>
+      <p>Análises estratégicas de produto e negócio. O nível de um Analytics Engineer sênior.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Ensine Retenção de Usuários em SQL com exercícios na minha base')">Retenção de Usuários</span>
+        <span class="tag" onclick="sendPrompt('Ensine Cohort Analysis completa em SQL com exercícios na minha base')">Cohort Analysis</span>
+        <span class="tag" onclick="sendPrompt('Ensine Churn Analysis em SQL com exercícios na minha base de dados')">Churn Analysis</span>
+        <span class="tag" onclick="sendPrompt('Ensine LTV (Lifetime Value) em SQL com exercícios na minha base')">LTV</span>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge fase7">Fase 8 — Data Engineering</span>
+        <span style="font-size:12px;color:var(--color-text-secondary)">Semana 8–10</span>
+      </div>
+      <p>SCD, Feature Store, snapshots. O SQL da sua tabela tb_feature_store_cliente está aqui.</p>
+      <div class="tags">
+        <span class="tag" onclick="sendPrompt('Explique o padrão da minha tabela feature_store_cliente e ensine como interpretar e criar queries nela')">Feature Store</span>
+        <span class="tag" onclick="sendPrompt('Ensine Slowly Changing Dimensions (SCD) Tipo 2 em SQL com exemplos')">SCD Tipo 2</span>
+        <span class="tag" onclick="sendPrompt('Ensine CDC (Change Data Capture) em SQL com exemplos práticos')">CDC</span>
+        <span class="tag" onclick="sendPrompt('Ensine como criar snapshots diários/mensais de métricas em SQL')">Snapshots</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3: SCHEMA -->
+  <div id="schema" class="section">
+    <h2>Sua Base de Dados</h2>
+    <p>Contexto: plataforma de pontos/rewards com transações de clientes em canais Twitch e Cursos.</p>
+
+    <div class="schema-block">
+      <span class="tbl">transacoes</span> <span style="font-size:11px;color:var(--color-text-secondary)">(303.875 linhas)</span><br>
+      <span class="col"><span class="pk">IdTransacao</span> TEXT — UUID da transação (PK)</span>
+      <span class="col">IdCliente TEXT — UUID do cliente (FK → clientes)</span>
+      <span class="col">DtCriacao DATETIME — timestamp da transação</span>
+      <span class="col">QtdePontos BIGINT — pontos movimentados (+ ou -)</span>
+      <span class="col">DescSistemaOrigem TEXT — 'twitch' ou 'cursos'</span>
+    </div>
+
+    <div class="schema-block">
+      <span class="tbl">transacao_produto</span> <span style="font-size:11px;color:var(--color-text-secondary)">(304.292 linhas)</span><br>
+      <span class="col"><span class="pk">idTransacaoProduto</span> TEXT — UUID (PK)</span>
+      <span class="col">IdTransacao TEXT — FK → transacoes</span>
+      <span class="col">IdProduto TEXT — FK → produtos (ex: '5', '11')</span>
+      <span class="col">QtdeProduto BIGINT — quantidade comprada</span>
+      <span class="col">vlProduto BIGINT — valor em pontos</span>
+    </div>
+
+    <div class="schema-block">
+      <span class="tbl">clientes</span> <span style="font-size:11px;color:var(--color-text-secondary)">(5.121 linhas)</span><br>
+      <span class="col"><span class="pk">idCliente</span> TEXT — UUID (PK)</span>
+      <span class="col">flEmail / flTwitch / flYouTube / flBlueSky / flInstagram BIGINT — flags de canal</span>
+      <span class="col">qtdePontos BIGINT — saldo atual</span>
+      <span class="col">DtCriacao / DtAtualizacao DATETIME</span>
+    </div>
+
+    <div class="schema-block">
+      <span class="tbl">produtos</span> <span style="font-size:11px;color:var(--color-text-secondary)">(118 linhas)</span><br>
+      <span class="col"><span class="pk">IdProduto</span> TEXT — ex: '001 - Espada Longa' (PK)</span>
+      <span class="col">DescNomeProduto / DescDescricaoProduto TEXT</span>
+      <span class="col">DescCategoriaProduto TEXT — espada, armadura, botas, ponei, etc.</span>
+    </div>
+
+    <div class="schema-block">
+      <span class="tbl">feature_store_cliente</span> <span style="font-size:11px;color:var(--color-text-secondary)">(24.941 linhas — snapshot mensal)</span><br>
+      <span class="col"><span class="pk">dtRef</span> DATE — data de referência do snapshot (2025-01 a 2025-07)</span>
+      <span class="col"><span class="pk">IdCliente</span> TEXT — FK → clientes</span>
+      <span class="col">TransacoesVida / Transacoes56 / 28 / 14 / 7 — qtde transações por janela</span>
+      <span class="col">SaldoPontos / qtdePontosPos* / qtdePontosNeg* — movimentação por janela</span>
+      <span class="col">diasUltimaInteracao — dias desde última transação</span>
+      <span class="col">produtoVida / produto56 / 28 / 14 / 7 — produto mais comprado por janela</span>
+      <span class="col">engajamento28Vida — ratio de engajamento recente vs vida</span>
+    </div>
+
+    <p style="margin-top:16px;">Período das transações: <strong>Jan/2024 a Mar/2026</strong>. Canais: <strong>twitch</strong> e <strong>cursos</strong>.</p>
+  </div>
+
+  <!-- SEÇÃO 4: EXERCÍCIOS -->
+  <div id="exercicios" class="section">
+    <h2>Exercícios Estilo LeetCode</h2>
+    <p>Com sua base de dados real. Cada exercício tem hints progressivos e solução comentada.</p>
+
+    <!-- EX 1 -->
+    <div class="exercise-card">
+      <div class="ex-header">
+        <span class="ex-title">1. Top 5 Produtos por Receita</span>
+        <span class="diff-badge easy">Fácil</span>
+        <span style="font-size:11px;background:var(--color-background-secondary);padding:2px 8px;border-radius:20px;color:var(--color-text-secondary)">GROUP BY</span>
+      </div>
+      <div class="ex-context">Contexto: você é analista da plataforma de rewards. O time de produto quer saber quais produtos geram mais receita.</div>
+      <div class="ex-problem">Liste os 5 produtos com maior receita total (soma de vlProduto × QtdeProduto), mostrando o nome do produto, categoria e receita total. Ordene do maior para o menor.</div>
+      <div class="tables-used">Tabelas: <span>transacao_produto</span> <span>produtos</span></div>
+      <details>
+        <summary>💡 Hints (clique para revelar)</summary>
+        <ul class="hint-list">
+          <li><strong>Hint 1:</strong> Você precisa combinar transacao_produto com produtos para ter o nome. Que tipo de JOIN usar?</li>
+          <li><strong>Hint 2:</strong> A receita por linha é vlProduto * QtdeProduto. Você precisa somar isso agrupando por produto.</li>
+          <li><strong>Hint 3:</strong> Use LIMIT 5 no final. Lembre de fazer ORDER BY DESC para ordenar do maior.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>✅ Solução comentada</summary>
+        <pre><span class="comment">-- Padrão: GROUP BY + JOIN + ORDER BY + LIMIT</span>
+<span class="kw-sql">SELECT</span>
+    p.DescNomeProduto,
+    p.DescCategoriaProduto,
+    <span class="comment">-- Receita total: preço × quantidade</span>
+    SUM(tp.vlProduto * tp.QtdeProduto) <span class="kw-sql">AS</span> receita_total
+<span class="kw-sql">FROM</span> transacao_produto tp
+<span class="kw-sql">INNER JOIN</span> produtos p <span class="kw-sql">ON</span> tp.IdProduto = p.IdProduto
+<span class="kw-sql">GROUP BY</span>
+    p.DescNomeProduto,
+    p.DescCategoriaProduto
+<span class="kw-sql">ORDER BY</span> receita_total <span class="kw-sql">DESC</span>
+<span class="kw-sql">LIMIT</span> 5;</pre>
+      </details>
+      <details>
+        <summary>🧠 Sinais para reconhecer no futuro</summary>
+        <div class="signal"><span class="signal-icon">📌</span><span class="signal-text">"Top N de X" → ORDER BY DESC + LIMIT N</span></div>
+        <div class="signal"><span class="signal-icon">📌</span><span class="signal-text">"maior receita total" → SUM() + GROUP BY</span></div>
+        <div class="signal"><span class="signal-icon">📌</span><span class="signal-text">Sempre que precisar de nome/desc de outra tabela → JOIN</span></div>
+      </details>
+    </div>
+
+    <!-- EX 2 -->
+    <div class="exercise-card">
+      <div class="ex-header">
+        <span class="ex-title">2. Clientes Ativos por Canal de Origem</span>
+        <span class="diff-badge easy">Fácil</span>
+        <span style="font-size:11px;background:var(--color-background-secondary);padding:2px 8px;border-radius:20px;color:var(--color-text-secondary)">GROUP BY + HAVING</span>
+      </div>
+      <div class="ex-context">O time de growth quer entender a distribuição de clientes por canal e focar nos canais com mais engajamento.</div>
+      <div class="ex-problem">Para cada canal de origem (DescSistemaOrigem), mostre: número de clientes únicos, total de transações, e média de pontos por transação. Filtre apenas canais com mais de 1.000 clientes únicos.</div>
+      <div class="tables-used">Tabelas: <span>transacoes</span></div>
+      <details>
+        <summary>💡 Hints</summary>
+        <ul class="hint-list">
+          <li><strong>Hint 1:</strong> COUNT(DISTINCT IdCliente) conta clientes únicos — diferente de COUNT(*).</li>
+          <li><strong>Hint 2:</strong> O filtro "mais de 1.000 clientes" é sobre o resultado do GROUP — use HAVING, não WHERE.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>✅ Solução</summary>
+        <pre><span class="kw-sql">SELECT</span>
+    DescSistemaOrigem,
+    COUNT(<span class="kw-sql">DISTINCT</span> IdCliente)  <span class="kw-sql">AS</span> clientes_unicos,
+    COUNT(*)                        <span class="kw-sql">AS</span> total_transacoes,
+    AVG(QtdePontos)                 <span class="kw-sql">AS</span> media_pontos
+<span class="kw-sql">FROM</span> transacoes
+<span class="kw-sql">GROUP BY</span> DescSistemaOrigem
+<span class="kw-sql">HAVING</span> COUNT(<span class="kw-sql">DISTINCT</span> IdCliente) > 1000
+<span class="kw-sql">ORDER BY</span> clientes_unicos <span class="kw-sql">DESC</span>;</pre>
+      </details>
+    </div>
+
+    <!-- EX 3 -->
+    <div class="exercise-card">
+      <div class="ex-header">
+        <span class="ex-title">3. Evolução Mensal de Transações com Variação</span>
+        <span class="diff-badge medium">Médio</span>
+        <span style="font-size:11px;background:var(--color-background-secondary);padding:2px 8px;border-radius:20px;color:var(--color-text-secondary)">Window Function: LAG</span>
+      </div>
+      <div class="ex-context">O time de produto quer monitorar crescimento mês a mês. Você precisa mostrar não só o volume, mas a variação percentual.</div>
+      <div class="ex-problem">Para cada mês (2024 e 2025), mostre: total de transações, total de pontos movimentados, e a variação percentual de transações em relação ao mês anterior. Ordene por data.</div>
+      <div class="tables-used">Tabelas: <span>transacoes</span></div>
+      <details>
+        <summary>💡 Hints</summary>
+        <ul class="hint-list">
+          <li><strong>Hint 1:</strong> Em SQLite, use strftime('%Y-%m', DtCriacao) para extrair ano-mês.</li>
+          <li><strong>Hint 2:</strong> LAG(coluna, 1) OVER (ORDER BY mes) pega o valor do mês anterior.</li>
+          <li><strong>Hint 3:</strong> Você não pode usar LAG direto no SELECT com GROUP BY. Use CTE: primeiro agrupe, depois aplique a window function.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>✅ Solução</summary>
+        <pre><span class="kw-sql">WITH</span> base <span class="kw-sql">AS</span> (
+    <span class="kw-sql">SELECT</span>
+        strftime(<span style="color:#0F6E56">'%Y-%m'</span>, DtCriacao) <span class="kw-sql">AS</span> mes,
+        COUNT(*)            <span class="kw-sql">AS</span> total_transacoes,
+        SUM(QtdePontos)     <span class="kw-sql">AS</span> total_pontos
+    <span class="kw-sql">FROM</span> transacoes
+    <span class="kw-sql">GROUP BY</span> mes
+)
+<span class="kw-sql">SELECT</span>
+    mes,
+    total_transacoes,
+    total_pontos,
+    LAG(total_transacoes, 1) <span class="kw-sql">OVER</span> (<span class="kw-sql">ORDER BY</span> mes) <span class="kw-sql">AS</span> transacoes_mes_ant,
+    <span class="comment">-- Variação %: (atual - anterior) / anterior * 100</span>
+    ROUND(
+        (total_transacoes - LAG(total_transacoes,1) <span class="kw-sql">OVER</span> (<span class="kw-sql">ORDER BY</span> mes))
+        * 100.0
+        / LAG(total_transacoes,1) <span class="kw-sql">OVER</span> (<span class="kw-sql">ORDER BY</span> mes),
+    1) <span class="kw-sql">AS</span> variacao_pct
+<span class="kw-sql">FROM</span> base
+<span class="kw-sql">ORDER BY</span> mes;</pre>
+      </details>
+      <details>
+        <summary>🧠 Sinais para reconhecer</summary>
+        <div class="signal"><span class="signal-icon">📌</span><span class="signal-text">"variação em relação ao período anterior" → LAG()</span></div>
+        <div class="signal"><span class="signal-icon">📌</span><span class="signal-text">"crescimento mês a mês" → LAG + divisão percentual</span></div>
+        <div class="signal"><span class="signal-icon">📌</span><span class="signal-text">Window Function depois de GROUP BY → sempre use CTE</span></div>
+      </details>
+    </div>
+
+    <!-- EX 4 -->
+    <div class="exercise-card">
+      <div class="ex-header">
+        <span class="ex-title">4. Top 1 Produto por Categoria</span>
+        <span class="diff-badge medium">Médio</span>
+        <span style="font-size:11px;background:var(--color-background-secondary);padding:2px 8px;border-radius:20px;color:var(--color-text-secondary)">Top N por Grupo</span>
+      </div>
+      <div class="ex-context">O time de catálogo quer saber, em cada categoria de produto, qual é o campeão de vendas.</div>
+      <div class="ex-problem">Para cada categoria de produto, mostre o produto com maior número de vendas (maior QtdeProduto total). Em caso de empate, mostre o que vem primeiro alfabeticamente.</div>
+      <div class="tables-used">Tabelas: <span>transacao_produto</span> <span>produtos</span></div>
+      <details>
+        <summary>💡 Hints</summary>
+        <ul class="hint-list">
+          <li><strong>Hint 1:</strong> Esse é o clássico "Top N por Grupo". Sinal: "o melhor de cada categoria".</li>
+          <li><strong>Hint 2:</strong> Use ROW_NUMBER() OVER (PARTITION BY categoria ORDER BY vendas DESC) para numerar dentro de cada grupo.</li>
+          <li><strong>Hint 3:</strong> Filtre WHERE rn = 1 fora do CTE — window functions não podem estar no WHERE.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>✅ Solução</summary>
+        <pre><span class="kw-sql">WITH</span> vendas_produto <span class="kw-sql">AS</span> (
+    <span class="kw-sql">SELECT</span>
+        p.DescCategoriaProduto,
+        p.DescNomeProduto,
+        SUM(tp.QtdeProduto) <span class="kw-sql">AS</span> total_vendas
+    <span class="kw-sql">FROM</span> transacao_produto tp
+    <span class="kw-sql">INNER JOIN</span> produtos p <span class="kw-sql">ON</span> tp.IdProduto = p.IdProduto
+    <span class="kw-sql">GROUP BY</span> p.DescCategoriaProduto, p.DescNomeProduto
+),
+ranking <span class="kw-sql">AS</span> (
+    <span class="kw-sql">SELECT</span>
+        *,
+        ROW_NUMBER() <span class="kw-sql">OVER</span> (
+            <span class="kw-sql">PARTITION BY</span> DescCategoriaProduto
+            <span class="kw-sql">ORDER BY</span> total_vendas <span class="kw-sql">DESC</span>, DescNomeProduto
+        ) <span class="kw-sql">AS</span> rn
+    <span class="kw-sql">FROM</span> vendas_produto
+)
+<span class="kw-sql">SELECT</span>
+    DescCategoriaProduto,
+    DescNomeProduto,
+    total_vendas
+<span class="kw-sql">FROM</span> ranking
+<span class="kw-sql">WHERE</span> rn = 1
+<span class="kw-sql">ORDER BY</span> DescCategoriaProduto;</pre>
+      </details>
+    </div>
+
+    <!-- EX 5 -->
+    <div class="exercise-card">
+      <div class="ex-header">
+        <span class="ex-title">5. Retenção Mensal de Clientes (Cohort)</span>
+        <span class="diff-badge hard">Difícil</span>
+        <span style="font-size:11px;background:var(--color-background-secondary);padding:2px 8px;border-radius:20px;color:var(--color-text-secondary)">Cohort Analysis</span>
+      </div>
+      <div class="ex-context">O time de produto precisa de uma análise de retenção: dos clientes que começaram em cada mês, quantos voltaram nos meses seguintes?</div>
+      <div class="ex-problem">Calcule a retenção por cohort mensal. Para cada cohort (mês da primeira transação do cliente), mostre quantos clientes estão no cohort e a % que voltou a transacionar em cada um dos meses seguintes (mês 0, 1, 2, 3...).</div>
+      <div class="tables-used">Tabelas: <span>transacoes</span></div>
+      <details>
+        <summary>💡 Hints</summary>
+        <ul class="hint-list">
+          <li><strong>Hint 1:</strong> Sinal claro de cohort: "primeiro mês do cliente". Comece com MIN(DtCriacao) por cliente.</li>
+          <li><strong>Hint 2:</strong> Use CAST((julianday(mes_transacao) - julianday(cohort)) / 30 AS INT) para calcular o período relativo em SQLite.</li>
+          <li><strong>Hint 3:</strong> Monte em 3 CTEs: (1) cohort de cada cliente, (2) transações por cohort+período, (3) cálculo do %.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>✅ Solução</summary>
+        <pre><span class="kw-sql">WITH</span> cohort_cliente <span class="kw-sql">AS</span> (
+    <span class="comment">-- Mês de entrada de cada cliente</span>
+    <span class="kw-sql">SELECT</span>
+        IdCliente,
+        strftime(<span style="color:#0F6E56">'%Y-%m'</span>, MIN(DtCriacao)) <span class="kw-sql">AS</span> cohort
+    <span class="kw-sql">FROM</span> transacoes
+    <span class="kw-sql">GROUP BY</span> IdCliente
+),
+atividade <span class="kw-sql">AS</span> (
+    <span class="comment">-- Junta cada transação com o cohort do cliente</span>
+    <span class="kw-sql">SELECT</span>
+        cc.cohort,
+        cc.IdCliente,
+        strftime(<span style="color:#0F6E56">'%Y-%m'</span>, t.DtCriacao) <span class="kw-sql">AS</span> mes_ativo,
+        CAST(
+          (julianday(strftime(<span style="color:#0F6E56">'%Y-%m-01'</span>, t.DtCriacao))
+         - julianday(cc.cohort || <span style="color:#0F6E56">'-01'</span>)) / 30
+        <span class="kw-sql">AS</span> INT) <span class="kw-sql">AS</span> periodo
+    <span class="kw-sql">FROM</span> transacoes t
+    <span class="kw-sql">INNER JOIN</span> cohort_cliente cc <span class="kw-sql">ON</span> t.IdCliente = cc.IdCliente
+),
+tamanho_cohort <span class="kw-sql">AS</span> (
+    <span class="kw-sql">SELECT</span> cohort, COUNT(<span class="kw-sql">DISTINCT</span> IdCliente) <span class="kw-sql">AS</span> total_cohort
+    <span class="kw-sql">FROM</span> cohort_cliente
+    <span class="kw-sql">GROUP BY</span> cohort
+)
+<span class="kw-sql">SELECT</span>
+    a.cohort,
+    tc.total_cohort,
+    a.periodo,
+    COUNT(<span class="kw-sql">DISTINCT</span> a.IdCliente) <span class="kw-sql">AS</span> clientes_ativos,
+    ROUND(
+        COUNT(<span class="kw-sql">DISTINCT</span> a.IdCliente) * 100.0
+        / tc.total_cohort, 1
+    ) <span class="kw-sql">AS</span> retencao_pct
+<span class="kw-sql">FROM</span> atividade a
+<span class="kw-sql">INNER JOIN</span> tamanho_cohort tc <span class="kw-sql">ON</span> a.cohort = tc.cohort
+<span class="kw-sql">GROUP BY</span> a.cohort, tc.total_cohort, a.periodo
+<span class="kw-sql">ORDER BY</span> a.cohort, a.periodo;</pre>
+      </details>
+    </div>
+
+    <div style="text-align:center;padding:16px 0;border-top:0.5px solid var(--color-border-tertiary);margin-top:8px">
+      <button onclick="sendPrompt('Crie mais 5 exercícios progressivos estilo LeetCode com minha base de dados — próximo nível')" style="font-size:13px;padding:8px 20px;cursor:pointer;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary)">Gerar mais exercícios ↗</button>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 5: PLANO DE ESTUDO -->
+  <div id="plano" class="section">
+    <h2>Plano de Repetição Espaçada</h2>
+    <p>Inspirado no método LeetCode + Anki. Foco em reconhecimento de padrões, não memorização de sintaxe.</p>
+
+    <h3>Semanas 1–2: Fundamentos + Agregações</h3>
+    <div class="day-card"><span class="day-num">Dia 1</span><div class="day-content"><strong>Aprenda: SELECT, WHERE, ORDER BY, LIMIT</strong><p>Leia a teoria. Resolva 5 exercícios simples na sua base.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 2</span><div class="day-content"><strong>Aprenda: GROUP BY + funções agregadoras</strong><p>Resolva 8 exercícios progressivos. Foque no padrão, não na sintaxe.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 3</span><div class="day-content"><strong>HAVING + CASE WHEN</strong><p>Resolva 6 exercícios. Repita sem consultar soluções os exercícios do dia 1.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 7</span><div class="day-content"><strong>Revisão: Fundamentos</strong><p>Repita todos os exercícios da semana 1 sem consultar respostas. Cronometrado.</p></div></div>
+
+    <h3>Semanas 3–4: JOINs + Subqueries + CTEs</h3>
+    <div class="day-card"><span class="day-num">Dia 8</span><div class="day-content"><strong>INNER JOIN + LEFT JOIN</strong><p>10 exercícios usando suas 3 tabelas. Pratique identificar quando usar cada um.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 10</span><div class="day-content"><strong>Subqueries + CTEs</strong><p>Reescreva queries com subquery usando CTE. Compare a leitura.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 14</span><div class="day-content"><strong>Revisão: Semanas 1–2</strong><p>Resolva os 20 exercícios anteriores. Anote onde travou.</p></div></div>
+
+    <h3>Semanas 5–6: Window Functions</h3>
+    <div class="day-card"><span class="day-num">Dia 15</span><div class="day-content"><strong>ROW_NUMBER, RANK, DENSE_RANK</strong><p>5 exercícios de ranking. O padrão Top N por Grupo.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 17</span><div class="day-content"><strong>LAG, LEAD, Running Total</strong><p>6 exercícios de variação temporal com sua tabela de transações.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 21</span><div class="day-content"><strong>Revisão: Todas as Window Functions</strong><p>Resolva sem hints. Teste: consegue identificar o padrão só pelo enunciado?</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 30</span><div class="day-content"><strong>Revisão Geral — Fase 1 a 5</strong><p>40 minutos cronometrados. Todos os padrões estudados até aqui.</p></div></div>
+
+    <h3>Semanas 7–10: Analytics + Data Engineering</h3>
+    <div class="day-card"><span class="day-num">Dia 31</span><div class="day-content"><strong>Cohort Analysis + Retenção</strong><p>O exercício 5 deste guia. Entenda o raciocínio das 3 CTEs.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 35</span><div class="day-content"><strong>Feature Store: interprete sua tabela</strong><p>Entenda o padrão de snapshot mensal. Escreva queries sobre feature_store_cliente.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 42</span><div class="day-content"><strong>Gaps and Islands + Churn</strong><p>Identifique clientes que pararam de transacionar usando LAG.</p></div></div>
+    <div class="day-card"><span class="day-num">Dia 60</span><div class="day-content"><strong>Revisão Final</strong><p>Resolva 15 exercícios misturados. Você deve identificar o padrão nos primeiros 30 segundos de leitura.</p></div></div>
+
+    <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-top:16px;background:var(--color-background-secondary)">
+      <p style="font-weight:500;font-size:13px;color:var(--color-text-primary);margin-bottom:8px">Meta de reconhecimento automático</p>
+      <div class="signal"><span class="signal-icon">🎯</span><span class="signal-text">"Top produto por categoria" → imediato: ROW_NUMBER + PARTITION BY</span></div>
+      <div class="signal"><span class="signal-icon">🎯</span><span class="signal-text">"Variação mês a mês" → imediato: LAG + CTE</span></div>
+      <div class="signal"><span class="signal-icon">🎯</span><span class="signal-text">"Clientes que voltaram" → imediato: Cohort com MIN(data) + JOIN</span></div>
+      <div class="signal"><span class="signal-icon">🎯</span><span class="signal-text">"Dias consecutivos" → imediato: Gaps and Islands com ROW_NUMBER</span></div>
+      <div class="signal"><span class="signal-icon">🎯</span><span class="signal-text">"Estado do cliente em data X" → imediato: Feature Store / SCD</span></div>
+    </div>
+
+    <div style="text-align:center;padding:20px 0 4px">
+      <button onclick="sendPrompt('Quero começar agora. Me ensine GROUP BY com 10 exercícios progressivos usando minha base de dados SQLite — comece pelo conceito, depois exemplos simples, depois exercícios com solução e dicas')" style="font-size:14px;padding:10px 24px;cursor:pointer;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);font-weight:500">Começar pelo Dia 1 ↗</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
